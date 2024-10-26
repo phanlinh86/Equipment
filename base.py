@@ -14,10 +14,13 @@ class Base(object):
     list() - List all the available resources        
     """
     def __init__(self, address = None) -> None:
-        self.address = address      # Address of the instrument
-        self.status = False         # Connection status
-        self.__rm = pyvisa.ResourceManager()  # Resource Manager
-        self.__inst = None          # Instrument object        
+        if address is not None:
+            self.connect(address)   # Connect to the instrument uf address is provided
+        else:
+            self.address = None     # Address of the instrument
+            self.status = False         # Connection status
+            self.__rm = pyvisa.ResourceManager()  # Resource Manager
+            self.inst = None          # Instrument object
 
     def connect(self, address):
         """connect(address)
@@ -31,6 +34,10 @@ class Base(object):
         Returns:
             None                                    
         """
+        # Check if resource manager is available. If not, create one
+        if hasattr(self, '__rm') is False:
+            self.__rm = pyvisa.ResourceManager()  # Resource Manager
+            self.inst = None
         # Address components
         connect_type, connect_address = address.split(':')
         # this is the string address of the instrument used by pyvisa
@@ -39,7 +46,7 @@ class Base(object):
         error_message = ''  # This variable will be used to store the error message if any
         if visa_address in self.list():
             try:
-                self.__inst = self.__rm.open_resource(visa_address)
+                self.inst = self.__rm.open_resource(visa_address)
                 status = True
             except Exception as e:
                 print(f'Error: {e}')
@@ -52,7 +59,6 @@ class Base(object):
         if status:
             self.address = address
             self.status = status
-            print(f'Connected to {address}')
 
         return status, error_message
 
@@ -68,9 +74,9 @@ class Base(object):
             None                                    
         """
         if self.status:
-            self.__inst.close()
+            self.inst.close()
             self.status = False
-            self.__inst = None
+            self.inst = None
             print(f'Disconnected from {self.address}')
         else:
             print(f'Not connected to any device')
@@ -100,7 +106,7 @@ class Base(object):
             Identity of the instrument.                                    
         """
         if self.status:
-            return self.__inst.query('*IDN?').split(',')
+            return self.inst.query('*IDN?').split(',')
         else:
             return 'Not connected to any device'
 
@@ -124,3 +130,6 @@ if __name__ == "__main__":
     print(f'Identity of the instrument: {base.identify()}')
     # Step3. Disconnect from the resource
     base.disconnect()
+    # Step4. Create another object and check if the connection is established or not
+    base1 = Base('GPIB:7')
+    print(f'Is connected: {base1.status}')
