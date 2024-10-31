@@ -99,7 +99,11 @@ class PowerSupply(Base):
             if field is None:
                 self.voltage = float(self.inst.query('VOLT?').strip())
                 self.current = float(self.inst.query('CURR?').strip())
-                self.channel = self.inst.query('INST?').strip()
+                try:
+                    self.channel = self.inst.query('INST?').strip()
+                except Exception as err:
+                    self.channel = None
+
                 return f'{self.channel}: {self.voltage}V, {self.current}A'
             else:
                 if field == 'voltage':
@@ -109,7 +113,10 @@ class PowerSupply(Base):
                     self.current = float(self.inst.query('CURR?').strip())
                     return self.current
                 elif field == 'channel':
-                    self.channel = self.inst.query('INST?').strip()
+                    try:
+                        self.channel = self.inst.query('INST?').strip()
+                    except Exception as err:
+                        self.channel = None
                     return self.channel
                 else:
                     print('Error: Property not found')
@@ -130,7 +137,7 @@ class PowerSupply(Base):
 if __name__ == '__main__':
     # 1. Connect to the power supply instrument, display the list of available resources and identify the instrument
     print('Step1. Connect to the power supply instrument, display the list of available resources and identify the instrument')
-    ps = PowerSupply('GPIB:7')
+    ps = PowerSupply('GPIB:5')
     print(ps.list())
     print(ps.identify())
     # 2. Turn on and off the output of the power supply. Check the voltage, current and channel of the power supply
@@ -140,7 +147,7 @@ if __name__ == '__main__':
     print(ps)
     # 3. Set the voltage and current of the power supply
     print('Step3. Set the voltage and current of the power supply')
-    ps.set(5, 1, 'P25V')
+    ps.set(5, 1)
     print(ps)
     print(ps.get('voltage'))
     print(ps.get('current'))

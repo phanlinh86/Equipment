@@ -120,10 +120,11 @@ if __name__ == "__main__":
     print("Connect to base")
     base = Base()
     # Step1. List all the available resources
-    print(f'List all devices connected to this PC {os.environ["COMPUTERNAME"]}: {', '.join(base.list())}')
+    list_avail_resource = ', '.join(base.list())
+    print(f'List all devices connected to this PC {os.environ["COMPUTERNAME"]}: {list_avail_resource}')
     # Step2. Connect to the resource
-    print('Connecting to GPIB:7', end=' ')
-    if base.connect('GPIB:7'):
+    print('Connecting to GPIB:5', end=' ')
+    if base.connect('GPIB:5'):
         print('successfully !!')
     else:
         print('failed !!')
@@ -131,5 +132,5 @@ if __name__ == "__main__":
     # Step3. Disconnect from the resource
     base.disconnect()
     # Step4. Create another object and check if the connection is established or not
-    base1 = Base('GPIB:7')
+    base1 = Base('GPIB:6')
     print(f'Is connected: {base1.status}')
