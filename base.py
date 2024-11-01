@@ -13,6 +13,12 @@ class Base(object):
     disconnect() - Disconnect from the instrument
     list() - List all the available resources        
     """
+
+    SUPPORTED_DEVICE = {
+        'AWG'   :   ['AWG70002B', 'AWG7082C'],
+        'PS'    :   ['E3631A', 'E3644A'],
+    }
+
     def __init__(self, address = None) -> None:
         if address is not None:
             self.connect(address)   # Connect to the instrument uf address is provided
@@ -41,19 +47,18 @@ class Base(object):
         # Address components
         connect_type, connect_address = address.split(':')
         # this is the string address of the instrument used by pyvisa
-        visa_address = f'{connect_type}0::{connect_address}::INSTR'
+        if connect_type == 'IP':
+            visa_address = f'TCP{connect_type}0::{connect_address}::inst0::INSTR'
+        elif connect_type == 'GPIB':
+            visa_address = f'{connect_type}0::{connect_address}::INSTR'
         status = False  # This variable is used to check if the connection is established sucessfully
         error_message = ''  # This variable will be used to store the error message if any
-        if visa_address in self.list():
-            try:
-                self.inst = self.__rm.open_resource(visa_address)
-                status = True
-            except Exception as e:
-                print(f'Error: {e}')
-                error_message = e
-                status = False
-        else:
-            print(f'Error: {address} not found')
+        try:
+            self.inst = self.__rm.open_resource(visa_address)
+            status = True
+        except Exception as e:
+            print(f'Error: {e}')
+            error_message = e
             status = False
 
         if status:
@@ -120,8 +125,8 @@ if __name__ == "__main__":
     print("Connect to base")
     base = Base()
     # Step1. List all the available resources
-    list_avail_resource = ', '.join(base.list())
-    print(f'List all devices connected to this PC {os.environ["COMPUTERNAME"]}: {list_avail_resource}')
+    list_avail_resource = '\n'.join(base.list())
+    print(f'List all devices connected to this PC {os.environ["COMPUTERNAME"]}:\n{list_avail_resource}')
     # Step2. Connect to the resource
     print('Connecting to GPIB:5', end=' ')
     if base.connect('GPIB:5'):
@@ -132,5 +137,5 @@ if __name__ == "__main__":
     # Step3. Disconnect from the resource
     base.disconnect()
     # Step4. Create another object and check if the connection is established or not
-    base1 = Base('GPIB:6')
+    base1 = Base('GPIB:5')
     print(f'Is connected: {base1.status}')

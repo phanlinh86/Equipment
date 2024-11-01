@@ -3,6 +3,7 @@ This module is the class for power supply instruments.
 """
 from base import Base
 
+
 class PowerSupply(Base):
     """
     class PowerSupply(Base)
@@ -14,20 +15,21 @@ class PowerSupply(Base):
         on() - Turn on the output
         off() - Turn off the output
     """
-    def __init__(self, address = None) -> None:
+
+    def __init__(self, address=None) -> None:
         super().__init__(address)
         self.voltage = None
         self.current = None
         self.channel = None
-        
+
     def __str__(self) -> str:
         str_instrument = self.get()
-        
+
         if str_instrument:
             return str_instrument
         else:
             return 'Instrument not connected'
-    
+
     def on(self):
         """on()
         
@@ -42,7 +44,7 @@ class PowerSupply(Base):
             self.inst.write('OUTP ON')
         else:
             print('Error: Instrument not connected')
-            
+
     def off(self):
         """off()
         
@@ -58,7 +60,7 @@ class PowerSupply(Base):
         else:
             print('Error: Instrument not connected')
 
-    def set(self, voltage = None, current = None, channel = None):
+    def set(self, voltage=None, current=None, channel=None):
         """set(voltage = None, current = None, channel = None):
         
         Description: 
@@ -84,7 +86,7 @@ class PowerSupply(Base):
         else:
             print('Error: Instrument not connected')
 
-    def get(self, field = None):
+    def get(self, field=None):
         """get(field = None)
         
         Description: 
@@ -120,11 +122,10 @@ class PowerSupply(Base):
                     return self.channel
                 else:
                     print('Error: Property not found')
-                                        
+
         else:
             print('Error: Instrument not connected')
         return None
-
 
 
 # This is the main function to test the PowerSupply class
@@ -136,12 +137,14 @@ class PowerSupply(Base):
 
 if __name__ == '__main__':
     # 1. Connect to the power supply instrument, display the list of available resources and identify the instrument
-    print('Step1. Connect to the power supply instrument, display the list of available resources and identify the instrument')
-    ps = PowerSupply('GPIB:5')
+    print(
+        'Step1. Connect to the power supply instrument, display the list of available resources and identify the instrument')
+    ps = PowerSupply('GPIB:6')
     print(ps.list())
     print(ps.identify())
     # 2. Turn on and off the output of the power supply. Check the voltage, current and channel of the power supply
-    print('Step2. Turn on and off the output of the power supply. Check the voltage, current and channel of the power supply')
+    print(
+        'Step2. Turn on and off the output of the power supply. Check the voltage, current and channel of the power supply')
     ps.on()
     ps.off()
     print(ps)
