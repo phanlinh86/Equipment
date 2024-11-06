@@ -20,13 +20,14 @@ class Base(object):
     }
 
     def __init__(self, address = None) -> None:
+        self.status = False         # Connection status
+        self.__rm = pyvisa.ResourceManager()  # Resource Manager
+        self.inst = None          # Instrument object        
         if address is not None:
             self.connect(address)   # Connect to the instrument uf address is provided
         else:
             self.address = None     # Address of the instrument
-            self.status = False         # Connection status
-            self.__rm = pyvisa.ResourceManager()  # Resource Manager
-            self.inst = None          # Instrument object
+
 
     def connect(self, address):
         """connect(address)
